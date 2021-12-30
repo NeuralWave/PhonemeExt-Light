@@ -189,7 +189,7 @@ class Trainer():
         self.model.train()
         return loss_avg
 
-    def per_sample(self,sample):
+    def per_sample(self,sample): #phoneme error rate per sample
         self.model.eval()
 
         PER = 0
