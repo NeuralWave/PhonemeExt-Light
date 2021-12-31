@@ -34,6 +34,8 @@ class Trainer():
         return self.epochs
 
     def train(self, epochs,test_interval=10,per_interval=50):
+        """Train the model and output the train, test, and phoneme error rate (PER) to a txt file."""
+        
         self.model.train()
 
         nSeqs = len(self.dataload_train)
