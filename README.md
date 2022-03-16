@@ -7,8 +7,6 @@ This network implements the architecture shown in the paper [Towards End-to-End 
 
 An implementation of the training process is implemented in `ppg.py`.
 
-```command
-	Note: The TIMIT TEST and TRAIN datasets should be put under their respective folders in `/TIMIT`.
-```
+Note: The TIMIT TEST and TRAIN datasets should be put under their respective folders in `/TIMIT`.
 
 
