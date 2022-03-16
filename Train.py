@@ -25,9 +25,9 @@ class Trainer():
         self.per = 1.
         self.model.get_n_params()
         self.folding = [[13,40],[46,27,42],[36,52],[49,21],[10,25],[45,44],[39,50],[59,23,48],[2,24],[8,34],[57,58],[33,41,7,29,19,26,61,47,53]]
-        data_exist = exists(root_path+'checkpoint.pt')
+        data_exist = exists(root_path+'Checkpoints/checkpoint.pt')
         if data_exist and load:
-        	self.load()
+            self.load()
 
 
     def __len__(self):
@@ -45,9 +45,6 @@ class Trainer():
         if Params.train_params.USE_TENSOR_CORES:
             scaler = torch.cuda.amp.GradScaler()
             torch.backends.cudnn.benchmark = True
-
-        # fun = lambda epoch: 0.97 ** epoch
-        # scheduler = torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda=fun)
 
         for i in range(epochs+1):
             loss_avg_aux=0
@@ -94,8 +91,6 @@ class Trainer():
                     scaler.update()
                 else:
                     self.optimizer.step()
-
-            # scheduler.step()
             
             loss_avg=loss_avg_aux/nSeqs
             test_result=self.handle_logs_and_test(i,loss_avg,test_interval,test_result,per_interval)
@@ -150,7 +145,7 @@ class Trainer():
 
     def load(self):
         print("loading checkpoint..")
-        checkpoint = torch.load(self.root_path+'checkpoint.pt')
+        checkpoint = torch.load(self.root_path+'Checkpoints/checkpoint.pt')
         self.epochs = checkpoint['epochs']
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -178,7 +173,6 @@ class Trainer():
 
                 y = self.model(x)
                 y = y.transpose(0,1) # (T,N,nClasses)
-                #y = y.log_softmax(2)
 
                 target_length = sample['phones_len'].cuda()
                 target = sample['phones'].cuda()
@@ -202,7 +196,6 @@ class Trainer():
 
                 y = self.model(x)
                 y = y.transpose(0,1) # (T,N,nClasses)
-                #y = y.log_softmax(2)
                 y.squeeze()
                 target = sample['phones'][i]
 
@@ -213,9 +206,7 @@ class Trainer():
                 z = z.squeeze()
                 z = Utils.Delete_spaces_and_fold_phsec(z,self.folding)
                 target = Utils.Delete_spaces_and_fold_phsec(target,self.folding)
-                #print(z)
-                #print(target)
-                #print(Utils.compute_per(target,z))
+
                 PER = PER + Utils.compute_per(target,z)
         self.model.train()
         return PER/len(sample['audio'])
